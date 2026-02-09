@@ -1,0 +1,21 @@
+name: ranger_startup
+root: ./
+startup_window: launch
+pre_window: |
+  # humble
+  export AGV_NAMESPACE=ranger
+windows:
+  - scout_launch:
+    - bash /root/ranger_ws/src/ranger_ros2/ranger_bringup/scripts/bringup_can2usb.bash; ros2 launch ranger_bringup ranger_mini_v3.launch.py
+  - teleop:
+    - ros2 run teleop_twist_keyboard teleop_twist_keyboard
+  - kinova:
+      layout: tiled
+      panes:
+        - ros2 launch kortex_bringup gen3_lite.launch.py robot_ip:=192.168.1.10 launch_rviz:=false
+        - sleep 3; ros2 launch kinova_gen3_lite_moveit_config robot.launch.py robot_ip:=192.168.1.10
+  - livox:
+      layout: tiled
+      panes:
+        - ldconfig; ros2 launch livox_ros_driver2 rviz_MID360_launch.py user_config_path:=$(pwd)/config/livox_config.json
+        - sleep 5; ros2 run pointcloud_to_laserscan pointcloud_to_laserscan_node --ros-args -r cloud_in:=/livox/lidar -p min_height:=-0.2 -p max_height:=0.5 -p angle_min:=-3.0 -p angle_max:=3.0 -p range_min:=0.2 -p target_frame:=livox_frame -p transform_tolerance:=0.1
