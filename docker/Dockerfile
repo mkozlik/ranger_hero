@@ -103,6 +103,12 @@ WORKDIR /root/ranger_ws/src/ros2_kortex
 RUN git sparse-checkout init --cone && git sparse-checkout set kortex_moveit_config/kinova_gen3_lite_moveit_config
 
 
+RUN apt-get update && apt-get install -y \
+    ros-humble-librealsense2* \
+    ros-humble-realsense2-* \
+    && rm -rf /var/lib/apt/lists/*
+
+
 #RUN rosdep install --ignore-src --from-paths src -y -r
 
 # Go to workspace and build it

@@ -7,6 +7,13 @@ pre_window: |
 windows:
   - scout_launch:
     - bash /root/ranger_ws/src/ranger_ros2/ranger_bringup/scripts/bringup_can2usb.bash; ros2 launch ranger_bringup ranger_mini_v3.launch.py
+  - tf_publisher:
+      layout: tiled
+      panes:
+        - sleep 10; ros2 run tf2_ros static_transform_publisher 0.1679 0 0.023 0 0 0 ranger_base_link base_link
+        - sleep 10; ros2 run tf2_ros static_transform_publisher 0.288151 -0.006977 0.046311 1.570796 0 0 ranger_base_link livox_frame
+        - sleep 10; ros2 run tf2_ros static_transform_publisher 0 0 0 0 0 0 ranger_base_link base_footprint
+        - sleep 10; ros2 run tf2_ros static_transform_publisher 0.07 0 0 0 -1.570796 3.14159 dummy_link camera_link
   - teleop:
     - ros2 run teleop_twist_keyboard teleop_twist_keyboard
   - kinova:
@@ -19,3 +26,7 @@ windows:
       panes:
         - ldconfig; ros2 launch livox_ros_driver2 rviz_MID360_launch.py user_config_path:=$(pwd)/config/livox_config.json
         - sleep 5; ros2 run pointcloud_to_laserscan pointcloud_to_laserscan_node --ros-args -r cloud_in:=/livox/lidar -p min_height:=-0.2 -p max_height:=0.5 -p angle_min:=-3.0 -p angle_max:=3.0 -p range_min:=0.2 -p target_frame:=livox_frame -p transform_tolerance:=0.1
+  - realsense:
+      layout: tiled
+      panes:
+        - ros2 launch realsense2_camera rs_launch.py
