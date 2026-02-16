@@ -33,6 +33,7 @@ RUN apt-get update && apt-get install -y \
     ros-humble-kortex-bringup \
     ros-humble-kinova-gen3-6dof-robotiq-2f-85-moveit-config \
     ros-humble-pcl-conversions \
+    ros-humble-pcl-ros \
     apt-transport-https \
     cmake \
     libasio-dev \
