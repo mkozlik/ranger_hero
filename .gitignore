@@ -1,2 +1,4 @@
 .tmuxinator.yml
 __pycache__/
+*.pgm
+*.yaml
