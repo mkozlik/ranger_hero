@@ -3,7 +3,7 @@
 DOCKERFILE=Dockerfile
 IMAGE_NAME=ranger_hero
 
-distro="humble"
+distro="jazzy"
 build_args=""
 for (( i=1; i<=$#; i++));
 do

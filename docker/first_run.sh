@@ -1,10 +1,10 @@
 #!/bin/bash
 
 CONTAINER_NAME=$1
-[ -z "$CONTAINER_NAME" ] && CONTAINER_NAME=ranger_hero
+[ -z "$CONTAINER_NAME" ] && CONTAINER_NAME=ranger_hero_jazzy
 
 IMAGE_NAME=$2
-[ -z "$IMAGE_NAME" ] && IMAGE_NAME=ranger_hero:humble
+[ -z "$IMAGE_NAME" ] && IMAGE_NAME=ranger_hero:jazzy
 
 # Hook to the current SSH_AUTH_LOCK - since it changes
 # https://www.talkingquickly.co.uk/2021/01/tmux-ssh-agent-forwarding-vs-code/

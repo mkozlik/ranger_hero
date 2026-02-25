@@ -1,39 +1,37 @@
-FROM ros:humble
+FROM ros:jazzy
 
-ARG ROS2_DISTRO=humble
+ARG ROS2_DISTRO=jazzy
 ARG HOME=/root
 
 RUN apt-get update && apt-get install -y \
-    ros-humble-ros-base \
+    ros-jazzy-ros-base \
     python3-colcon-common-extensions \
     python3-vcstool \
     python3-pip \
     build-essential \
     git \
     x11-apps \
-    ros-humble-rmw-cyclonedds-cpp \
-    ros-humble-navigation2 \
-    ros-humble-nav2-bringup \
-    ros-humble-slam-toolbox \
-    ros-humble-tf2-ros \
-    ros-humble-rviz2 \
-    ros-humble-moveit \
-    ros-humble-usb-cam \
-    ros-humble-tf2-geometry-msgs \
-    ros-humble-tf-transformations \
-    ros-humble-robot-localization \
-    ros-humble-teleop-twist-* \
-    ros-humble-mavros \
-    ros-humble-plotjuggler-ros \
-    ros-humble-rosbag2-storage-mcap \
-    ros-humble-rqt* \
-    ros-humble-nmea-msgs \
-    ros-humble-mavros-msgs \
-    ros-humble-rmw-cyclonedds-cpp \
-    ros-humble-kortex-bringup \
-    ros-humble-kinova-gen3-6dof-robotiq-2f-85-moveit-config \
-    ros-humble-pcl-conversions \
-    ros-humble-pcl-ros \
+    ros-jazzy-rmw-cyclonedds-cpp \
+    ros-jazzy-navigation2 \
+    ros-jazzy-nav2-bringup \
+    ros-jazzy-slam-toolbox \
+    ros-jazzy-tf2-ros \
+    ros-jazzy-rviz2 \
+    ros-jazzy-moveit \
+    ros-jazzy-usb-cam \
+    ros-jazzy-tf2-geometry-msgs \
+    ros-jazzy-tf-transformations \
+    ros-jazzy-robot-localization \
+    ros-jazzy-teleop-twist-* \
+    ros-jazzy-mavros \
+    ros-jazzy-plotjuggler-ros \
+    ros-jazzy-rosbag2-storage-mcap \
+    ros-jazzy-rqt* \
+    ros-jazzy-nmea-msgs \
+    ros-jazzy-mavros-msgs \
+    ros-jazzy-rmw-cyclonedds-cpp \
+    ros-jazzy-pcl-conversions \
+    ros-jazzy-pcl-ros \
     apt-transport-https \
     cmake \
     libasio-dev \
@@ -41,7 +39,6 @@ RUN apt-get update && apt-get install -y \
     libboost-all-dev \
     libpcl-dev \
     lsb-release \
-    ignition-fortress \
     gnupg \
     nano \
     vim \
@@ -53,6 +50,13 @@ RUN apt-get update && apt-get install -y \
     kmod \
     tmuxinator \
     inetutils-ping \
+    build-essential \
+    cmake \
+    libssl-dev \
+    libasio-dev \
+    libapr1-dev \
+    libaprutil1-dev \
+    libjsoncpp-dev \
     && rm -rf /var/lib/apt/lists/*
 
 
@@ -82,44 +86,52 @@ RUN git clone https://github.com/Livox-SDK/Livox-SDK2.git
 WORKDIR /root/Livox-SDK2
 RUN mkdir build
 WORKDIR /root/Livox-SDK2/build
-RUN cmake .. && make -j
-RUN sudo make install
+#RUN cmake .. && make -j
+#RUN sudo make install
 
 
 WORKDIR /root
 RUN git clone https://github.com/Livox-SDK/livox_ros_driver2.git ws_livox/src/livox_ros_driver2
 COPY to_copy/MID360_config.json $HOME/ws_livox/src/livox_ros_driver2/config/MID360_config.json
 WORKDIR /root/ws_livox
-RUN /bin/bash -c "source /opt/ros/humble/setup.bash; ./src/livox_ros_driver2/build.sh humble"
+RUN /bin/bash -c "source /opt/ros/jazzy/setup.bash; ./src/livox_ros_driver2/build.sh humble"
 
 
 # Set up a workspace
 WORKDIR /root/ranger_ws/src
 RUN git clone https://github.com/westonrobot/ugv_sdk.git
 RUN git clone https://github.com/agilexrobotics/ranger_ros2.git
-RUN git clone --branch humble https://github.com/ros-perception/pointcloud_to_laserscan.git
-
-RUN git clone --branch humble --single-branch https://github.com/Kinovarobotics/ros2_kortex.git
-WORKDIR /root/ranger_ws/src/ros2_kortex
-RUN git sparse-checkout init --cone && git sparse-checkout set kortex_moveit_config/kinova_gen3_lite_moveit_config
+RUN git clone --branch jazzy https://github.com/ros-perception/pointcloud_to_laserscan.git
 
 
 RUN apt-get update && apt-get install -y \
-    ros-humble-librealsense2* \
-    ros-humble-realsense2-* \
+    ros-jazzy-librealsense2* \
+    ros-jazzy-realsense2-* \
+    ros-jazzy-example-interfaces \
     && rm -rf /var/lib/apt/lists/*
+
+
+WORKDIR /root/kinova_ws/src
+RUN git clone --branch jazzy https://github.com/Kinovarobotics/ros2_kortex.git
+WORKDIR /root/kinova_ws/
+RUN vcs import src --skip-existing --input src/ros2_kortex/ros2_kortex.$ROS_DISTRO.repos
+RUN vcs import src --skip-existing --input src/ros2_kortex/ros2_kortex-not-released.$ROS_DISTRO.repos
+
 
 
 #RUN rosdep install --ignore-src --from-paths src -y -r
 
 # Go to workspace and build it
 WORKDIR /root/ranger_ws/
-RUN /bin/bash -c "source /opt/ros/humble/setup.bash; colcon build --symlink-install"
+RUN /bin/bash -c "source /opt/ros/jazzy/setup.bash; colcon build --symlink-install"
+WORKDIR /root/kinova_ws/
+#RUN /bin/bash -c "source /opt/ros/jazzy/setup.bash; source install/setup.bash; colcon build --cmake-args -DCMAKE_BUILD_TYPE=Release --packages-select kortex_bringup kortex_description kortex_driver"
 
 RUN echo 'export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp' >> /root/.bashrc
 RUN echo 'source /root/ranger_ws/install/setup.bash' >> /root/.bashrc
-RUN echo 'source /opt/ros/humble/setup.bash' >> /root/.bashrc
+RUN echo 'source /opt/ros/jazzy/setup.bash' >> /root/.bashrc
 RUN echo 'source /root/ws_livox/install/setup.bash' >> /root/.bashrc
+#RUN echo 'source /root/kinova_ws/install/setup.bash' >> /root/.bashrc
 
 COPY to_copy/tmux $HOME/.tmux.conf
 

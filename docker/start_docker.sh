@@ -5,7 +5,7 @@ touch $XAUTH
 xauth nlist $DISPLAY | sed -e 's/^..../ffff/' | xauth -f $XAUTH nmerge -
 
 CONTAINER_NAME=$1
-[ -z "$CONTAINER_NAME" ] && CONTAINER_NAME=ranger_hero
+[ -z "$CONTAINER_NAME" ] && CONTAINER_NAME=ranger_hero_jazzy
 
 ln -sf $SSH_AUTH_SOCK ~/.ssh/ssh_auth_sock
 docker start $CONTAINER_NAME
