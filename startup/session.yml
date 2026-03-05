@@ -19,8 +19,10 @@ windows:
   - kinova:
       layout: tiled
       panes:
-        - ros2 launch kortex_bringup gen3_lite.launch.py robot_ip:=192.168.2.10 launch_rviz:=false
-        - sleep 3; ros2 launch kinova_gen3_lite_moveit_config robot.launch.py robot_ip:=192.168.2.10
+        - ros2 launch kinova_gen3_lite_moveit_config robot.launch.py robot_ip:=192.168.3.10
+        - sleep 3; ros2 run move_kinova_package move_kinova_node
+        - sleep 3; ros2 run move_kinova_package move_kinova_service
+        - history -s "ros2 service call /trigger_grab std_srvs/srv/Trigger {}"
   - livox:
       layout: tiled
       panes:
@@ -42,3 +44,5 @@ windows:
       layout: tiled
       panes:
         - ros2 run mqtt_client mqtt_client --ros-args --params-file $(pwd)/config/mqtt_jazzy_config.yaml
+        - ros2 run ros_tcp_endpoint default_server_endpoint
+        - python3 $(pwd)/scripts/republish_tf.py
